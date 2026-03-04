@@ -1,0 +1,69 @@
+services:
+  kong-gateway:
+    build: "./api"
+    container_name: kong-gateway
+    restart: always
+    environment:
+      - KONG_DATABASE=${KONG_DATABASE}
+      - KONG_PG_HOST=${KONG_PG_HOST}
+      - KONG_PG_PORT=${KONG_PG_PORT}
+      - KONG_PG_USER=${KONG_PG_USER}
+      - KONG_PG_PASSWORD=${KONG_PG_PASSWORD}
+      - KONG_PG_DATABASE=${KONG_PG_DATABASE}
+      - KONG_PG_SSL=${KONG_PG_SSL}
+      - KONG_PG_SSL_VERIFY=${KONG_PG_SSL_VERIFY}
+
+      - KONG_PROXY_ACCESS_LOG=${KONG_PROXY_ACCESS_LOG}
+      - KONG_ADMIN_ACCESS_LOG=${KONG_ADMIN_ACCESS_LOG}
+      - KONG_PROXY_ERROR_LOG=${KONG_PROXY_ERROR_LOG}
+      - KONG_ADMIN_ERROR_LOG=${KONG_ADMIN_ERROR_LOG}
+
+      - KONG_ADMIN_LISTEN=${KONG_ADMIN_LISTEN}
+      - KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN}
+      - KONG_ADMIN_GUI_LISTEN=${KONG_ADMIN_GUI_LISTEN}
+      - KONG_ADMIN_GUI_URL=${KONG_ADMIN_GUI_URL}
+
+    ports:
+      - "8000:8000" # Kong Proxy
+      - "8443:8443" # Kong Proxy SSL
+      - "8001:8001" # Kong Admin API
+      - "8444:8444" # Kong Admin API SSL
+      - "8002:8002" # Kong Manager
+
+  kong-manager:
+    build: "./manager"
+    container_name: kong-manager
+    depends_on:
+      - kong-gateway
+    restart: always
+    environment:
+      NODE_ENV: production
+      KONGA_HOOK_TIMEOUT: 120000
+
+      # - DB_ADAPTER=postgres # Hoặc 'local' nếu bạn không muốn dùng DB cho Konga
+      # - DB_HOST=kong-database
+      # - DB_USER=kong
+      # - DB_PASSWORD=kongpass
+      # - DB_DATABASE=konga_db
+
+      KONG_MANAGER_AUTH_USERNAME: vuvannghia.work@gmail.com
+      KONG_MANAGER_AUTH_PASSWORD: vuvannghia.work@gmail.com
+
+      KONGA_SEED_USER_DATA_SOURCE_FILE: /app/kongadata/uploads/user.data
+      KONGA_SEED_KONG_NODE_DATA_SOURCE_FILE: /app/kongadata/uploads/node.data
+
+      DECK_KONG_ADDR: http://kong-gateway:8001
+      DECK_KONG_KEY_AUTH: vuvannghia
+
+    #     DECK_LOG_URL: https://webhook.site/82d86c80-19a2-46a1-a07d-e3188443710b
+    #     DECK_LOG_BEARER_TOKEN: vuvannghia
+    #     # https://webhook.site/#!/view/82d86c80-19a2-46a1-a07d-e3188443710b/a4bff769-2036-4681-8717-80eed6edf701/1
+
+    volumes:
+      - "./manager/data/user.data:/app/kongadata/uploads/user.data"
+      - "./manager/data/node.data:/app/kongadata/uploads/node.data"
+    ports:
+      - "8079:1337"
+
+volumes:
+  kong_postgres:
