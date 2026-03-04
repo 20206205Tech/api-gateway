@@ -1,0 +1,22 @@
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "new": "sh scripts/new.sh",
+    "import": "sh scripts/import.sh",
+    "restore": "sh scripts/restore.sh",
+    "reset": "sh scripts/reset.sh",
+    "migration": "sh scripts/migration.sh",
+    "export": "sh scripts/export.sh",
+    "credentials": "python scripts/credentials.py",
+    "export-credentials": "npm run export && npm run credentials",
+    "open-web-manager": "python scripts/open-web-manager.py",
+    "reset-migration-export-credentials": "npm run reset && npm run migration && npm run export && npm run credentials && npm run open-web-manager"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
