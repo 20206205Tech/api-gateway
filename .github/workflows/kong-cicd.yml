@@ -20,10 +20,10 @@ jobs:
         working-directory: ./code/docker
 
     steps:
-      - name: Setup decK
-        uses: kong/setup-deck@v1
-        with:
-          deck-version: "1.55.0"
+      # - name: Setup decK
+      #   uses: kong/setup-deck@v1
+      #   with:
+      #     deck-version: "1.55.0"
 
       # - name: Warm up Kong API Gateway
       #   run: |
